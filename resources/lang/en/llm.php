@@ -1,0 +1,58 @@
+<?php
+
+return [
+    'llm' => 'Large Language Model',
+    'llms' => 'Large Language Models',
+    'search' => 'Search',
+    'llmsAvailable' => 'Large Language Models available',
+    'addNew' => 'Add a new model',
+    'noModels' => 'No models, add a new one!',
+    'endpoint' => 'Endpoint',
+    'provider' => 'Provider',
+    'model' => 'Model',
+    'options' => 'Options',
+    'update' => 'Update',
+    'delete' => 'Delete',
+    'previous' => 'Previous',
+    'next' => 'Next',
+    'addSucc' => 'Large Language Model added successfully!',
+    'close' => 'Close',
+    'updateSucc' => 'Large Language Model updated successfully!',
+    'deleteSucc' => 'Large Language Model deleted successfully!',
+    'tryAgain' => 'Unable to complete the request, please try again later.',
+    'addLLM' => [
+        'newLLM' => 'Add new Large Language Model',
+        'llmChose' => 'Which Large Language Model choose?',
+        'addEndpoint' => 'Add endpoint',
+        'addProvider' => 'Add provider',
+        'addModel' => 'Add model',
+        'placeholder' => [
+            'enterEndpoint' => 'Enter endpoint',
+            'enterProvider' => 'Enter provider',
+            'enterModel' => 'Enter model',
+        ],
+        'cancel' => 'Cancel',
+        'confirm' => 'Confirm',
+    ],
+    'deleteLLM' => [
+        'cancel' => 'Cancel',
+        'confirm' => 'Confirm',
+        'deleteLLm' => 'Delete LLM',
+        'confirmDelete' => 'Are you sure to delete the Large Language Model?',
+    ],
+    'helpLLM' => [
+        'help' => 'Help section',
+        'description' => 'Below are the buttons to the official documentation of the different LLMs:',
+        'close' => 'Close',
+    ],
+    'updateLLM' => [
+        'update' => 'Update LLM',
+        'value' => [
+            'endpoint' => 'Endpoint',
+            'provider' => 'Provider',
+            'model' => 'Model',
+        ],
+        'cancel' => 'Cancel',
+        'confirm' => 'Confirm',
+    ],
+];

@@ -1,0 +1,478 @@
+<?php
+// app/Services/ContentGenerationService.php
+// REALIZZATO DA: Andrea Amodeo
+
+namespace App\Services;
+
+use App\Models\Campaign;
+use App\Models\LLMIntegration;
+use App\Models\WizardSession;
+use Illuminate\Support\Facades\Log;
+
+class ContentGenerationService
+{
+    private LLMService $llmService;
+
+    public function __construct(LLMService $llmService)
+    {
+        $this->llmService = $llmService;
+    }
+
+    /**
+     * Valuta la risposta dell'utente a una simulazione
+     */
+    public function evaluateUserResponse(LLMIntegration $generation, array $userResponses, int $executionTime): array
+    {
+        $evaluation = [
+            'generation_id' => $generation->id,
+            'content_type' => $generation->content_type,
+            'execution_time' => $executionTime,
+            'responses' => $userResponses,
+            'score' => 0,
+            'is_vulnerable' => false,
+            'feedback' => [],
+            'recommendations' => [],
+            'educational_notes' => []
+        ];
+
+        // Valuta in base al tipo di contenuto
+        switch ($generation->content_type) {
+            case 'email_phishing':
+                $evaluation = $this->evaluateEmailPhishingResponse($evaluation, $userResponses, $generation);
+                break;
+            case 'vishing':
+                $evaluation = $this->evaluateVishingResponse($evaluation, $userResponses, $generation);
+                break;
+            case 'social_engineering':
+                $evaluation = $this->evaluateSocialEngineeringResponse($evaluation, $userResponses, $generation);
+                break;
+            case 'ceo_fraud':
+                $evaluation = $this->evaluateCeoFraudResponse($evaluation, $userResponses, $generation);
+                break;
+            case 'smishing':
+                $evaluation = $this->evaluateSmishingResponse($evaluation, $userResponses, $generation);
+                break;
+            case 'quiz_questions':
+                $evaluation = $this->evaluateQuizResponse($evaluation, $userResponses, $generation);
+                break;
+        }
+
+        // Calcola score finale e feedback generale
+        $evaluation['final_score'] = $this->calculateFinalScore($evaluation);
+        $evaluation['risk_level'] = $this->determineRiskLevel($evaluation);
+        $evaluation['performance_summary'] = $this->generatePerformanceSummary($evaluation);
+
+        // Log per analytics
+        $this->logEvaluationResult($evaluation);
+
+        return $evaluation;
+    }
+
+    /**
+     * Valuta risposta email phishing
+     */
+    private function evaluateEmailPhishingResponse(array $evaluation, array $responses, LLMIntegration $generation): array
+    {
+        $score = 0;
+        $content = $generation->getFormattedContent();
+
+        // Analizza l'azione principale
+        $primaryAction = $responses['primary_action'] ?? 'unknown';
+
+        switch ($primaryAction) {
+            case 'click_link':
+                $evaluation['is_vulnerable'] = true;
+                $evaluation['feedback'][] = "❌ CRITICO: Hai cliccato su un link sospetto";
+                $evaluation['recommendations'][] = "Non cliccare mai su link in email non verificate";
+                break;
+
+            case 'download_attachment':
+                $evaluation['is_vulnerable'] = true;
+                $evaluation['feedback'][] = "❌ CRITICO: Hai scaricato un allegato potenzialmente pericoloso";
+                $evaluation['recommendations'][] = "Scansiona sempre gli allegati con antivirus aggiornati";
+                break;
+
+            case 'verify_sender':
+                $score += 40;
+                $evaluation['feedback'][] = "✅ BENE: Hai verificato l'identità del mittente";
+                break;
+
+            case 'report_phishing':
+                $score += 50;
+                $evaluation['feedback'][] = "✅ ECCELLENTE: Hai segnalato l'email come phishing";
+                break;
+
+            case 'ignore_email':
+                $score += 30;
+                $evaluation['feedback'][] = "✅ PRUDENTE: Hai ignorato l'email sospetta";
+                $evaluation['recommendations'][] = "Considera di segnalare email sospette per proteggere i colleghi";
+                break;
+        }
+
+        // Analizza il riconoscimento degli indicatori
+        if (isset($responses['identified_red_flags'])) {
+            $identifiedFlags = $responses['identified_red_flags'];
+            $availableFlags = $content['red_flags'] ?? [];
+
+            $recognitionRate = count($identifiedFlags) / max(count($availableFlags), 1);
+            $recognitionScore = $recognitionRate * 30;
+            $score += $recognitionScore;
+
+            $evaluation['feedback'][] = sprintf(
+                "🔍 Hai identificato %d su %d indicatori di phishing (%.0f%%)",
+                count($identifiedFlags),
+                count($availableFlags),
+                $recognitionRate * 100
+            );
+        }
+
+        // Valuta il tempo di risposta
+        $timeScore = $this->evaluateResponseTime($evaluation['execution_time'], 'email_phishing');
+        $score += $timeScore;
+
+        $evaluation['score'] = min($score, 100);
+
+        return $evaluation;
+    }
+
+    /**
+     * Valuta risposta vishing
+     */
+    private function evaluateVishingResponse(array $evaluation, array $responses, LLMIntegration $generation): array
+    {
+        $score = 0;
+
+        // Analizza se ha chiuso la chiamata appropriatamente
+        if (isset($responses['hung_up']) && $responses['hung_up']) {
+            $score += 30;
+            $evaluation['feedback'][] = "✅ BENE: Hai chiuso la chiamata sospetta";
+        }
+
+        // Analizza se ha fornito informazioni sensibili
+        if (isset($responses['shared_info']) && $responses['shared_info']) {
+            $evaluation['is_vulnerable'] = true;
+            $evaluation['feedback'][] = "❌ CRITICO: Hai condiviso informazioni sensibili";
+            $evaluation['recommendations'][] = "Non fornire mai dati personali o aziendali via telefono";
+        }
+
+        // Valuta il riconoscimento delle tecniche di manipolazione
+        if (isset($responses['recognized_techniques'])) {
+            $techniqueScore = count($responses['recognized_techniques']) * 10;
+            $score += min($techniqueScore, 40);
+
+            $evaluation['feedback'][] = sprintf(
+                "🧠 Hai riconosciuto %d tecniche di manipolazione",
+                count($responses['recognized_techniques'])
+            );
+        }
+
+        // Verifica se ha preso nota di dettagli sospetti
+        if (isset($responses['noted_suspicious_details']) && $responses['noted_suspicious_details']) {
+            $score += 20;
+            $evaluation['feedback'][] = "✅ OTTIMO: Hai notato dettagli sospetti nella chiamata";
+        }
+
+        $evaluation['score'] = min($score, 100);
+
+        return $evaluation;
+    }
+
+    /**
+     * Valuta risposta social engineering
+     */
+    private function evaluateSocialEngineeringResponse(array $evaluation, array $responses, LLMIntegration $generation): array
+    {
+        $score = 0;
+
+        // Analizza la reazione al tentativo di manipolazione
+        $reaction = $responses['reaction'] ?? 'complied';
+
+        switch ($reaction) {
+            case 'complied':
+                $evaluation['is_vulnerable'] = true;
+                $evaluation['feedback'][] = "❌ VULNERABILE: Hai ceduto al tentativo di manipolazione";
+                break;
+
+            case 'questioned':
+                $score += 40;
+                $evaluation['feedback'][] = "✅ PRUDENTE: Hai messo in dubbio la richiesta";
+                break;
+
+            case 'refused':
+                $score += 50;
+                $evaluation['feedback'][] = "✅ ECCELLENTE: Hai rifiutato la richiesta sospetta";
+                break;
+
+            case 'escalated':
+                $score += 60;
+                $evaluation['feedback'][] = "✅ PERFETTO: Hai escalato la situazione ai superiori";
+                break;
+        }
+
+        // Valuta il riconoscimento dei trigger psicologici
+        if (isset($responses['psychological_triggers'])) {
+            $triggerScore = count($responses['psychological_triggers']) * 8;
+            $score += min($triggerScore, 32);
+        }
+
+        $evaluation['score'] = min($score, 100);
+
+        return $evaluation;
+    }
+
+    /**
+     * Valuta risposta CEO fraud
+     */
+    private function evaluateCeoFraudResponse(array $evaluation, array $responses, LLMIntegration $generation): array
+    {
+        $score = 0;
+
+        // Verifica se ha seguito i protocolli finanziari
+        if (isset($responses['followed_financial_protocol']) && $responses['followed_financial_protocol']) {
+            $score += 40;
+            $evaluation['feedback'][] = "✅ PROTOCOLLI: Hai seguito le procedure finanziarie standard";
+        } else {
+            $evaluation['is_vulnerable'] = true;
+            $evaluation['feedback'][] = "❌ PROTOCOLLI: Non hai seguito le procedure di sicurezza finanziaria";
+        }
+
+        // Verifica se ha confermato tramite canali alternativi
+        if (isset($responses['verified_through_alternative_channel']) && $responses['verified_through_alternative_channel']) {
+            $score += 30;
+            $evaluation['feedback'][] = "✅ VERIFICA: Hai confermato tramite canali alternativi";
+        }
+
+        // Analizza se ha riconosciuto l'urgenza artificiale
+        if (isset($responses['recognized_artificial_urgency']) && $responses['recognized_artificial_urgency']) {
+            $score += 20;
+            $evaluation['feedback'][] = "✅ RICONOSCIMENTO: Hai identificato l'urgenza artificiale";
+        }
+
+        $evaluation['score'] = min($score, 100);
+
+        return $evaluation;
+    }
+
+    /**
+     * Valuta risposta smishing
+     */
+    private function evaluateSmishingResponse(array $evaluation, array $responses, LLMIntegration $generation): array
+    {
+        $score = 0;
+
+        // Verifica se ha cliccato link sospetti
+        if (isset($responses['clicked_link']) && $responses['clicked_link']) {
+            $evaluation['is_vulnerable'] = true;
+            $evaluation['feedback'][] = "❌ LINK: Hai cliccato su un link sospetto via SMS";
+        } else {
+            $score += 40;
+            $evaluation['feedback'][] = "✅ SICUREZZA: Hai evitato di cliccare link sospetti";
+        }
+
+        // Verifica riconoscimento mittente falso
+        if (isset($responses['verified_sender']) && $responses['verified_sender']) {
+            $score += 30;
+            $evaluation['feedback'][] = "✅ VERIFICA: Hai verificato l'identità del mittente";
+        }
+
+        // Analizza riconoscimento tecniche di urgenza
+        if (isset($responses['recognized_urgency_scam']) && $responses['recognized_urgency_scam']) {
+            $score += 20;
+            $evaluation['feedback'][] = "✅ PATTERN: Hai riconosciuto la tecnica dell'urgenza";
+        }
+
+        $evaluation['score'] = min($score, 100);
+
+        return $evaluation;
+    }
+
+    /**
+     * Valuta risposta quiz
+     */
+    private function evaluateQuizResponse(array $evaluation, array $responses, LLMIntegration $generation): array
+    {
+        $content = $generation->getFormattedContent();
+        $questions = $content['questions'] ?? [];
+
+        $correctAnswers = 0;
+        $totalQuestions = count($questions);
+
+        foreach ($responses as $questionId => $userAnswer) {
+            if (isset($questions[$questionId])) {
+                $correctAnswer = $questions[$questionId]['correct_answer'] ?? null;
+                if ($userAnswer === $correctAnswer) {
+                    $correctAnswers++;
+                }
+            }
+        }
+
+        $accuracy = $totalQuestions > 0 ? ($correctAnswers / $totalQuestions) * 100 : 0;
+        $evaluation['score'] = $accuracy;
+
+        $evaluation['feedback'][] = sprintf(
+            "📊 Hai risposto correttamente a %d su %d domande (%.1f%%)",
+            $correctAnswers,
+            $totalQuestions,
+            $accuracy
+        );
+
+        if ($accuracy < 60) {
+            $evaluation['is_vulnerable'] = true;
+            $evaluation['recommendations'][] = "Necessario ulteriore training sulle tecniche anti-phishing";
+        }
+
+        return $evaluation;
+    }
+
+    /**
+     * Valuta il tempo di risposta
+     */
+    private function evaluateResponseTime(int $executionTime, string $contentType): int
+    {
+        $optimalTimes = [
+            'email_phishing' => 120,    // 2 minuti
+            'vishing' => 30,            // 30 secondi
+            'social_engineering' => 180, // 3 minuti
+            'ceo_fraud' => 300,         // 5 minuti
+            'smishing' => 60,           // 1 minuto
+            'quiz_questions' => 600     // 10 minuti
+        ];
+
+        $optimalTime = $optimalTimes[$contentType] ?? 120;
+
+        if ($executionTime <= $optimalTime) {
+            return 10; // Bonus per risposta rapida ma ponderata
+        } elseif ($executionTime <= $optimalTime * 2) {
+            return 5; // Tempo accettabile
+        }
+
+        return 0; // Troppo lento
+    }
+
+    /**
+     * Calcola score finale
+     */
+    private function calculateFinalScore(array $evaluation): int
+    {
+        $baseScore = $evaluation['score'];
+
+        // Penalità per vulnerabilità critiche
+        if ($evaluation['is_vulnerable']) {
+            $baseScore = min($baseScore, 40);
+        }
+
+        // Bonus per tempo di esecuzione
+        $timeBonus = $this->evaluateResponseTime(
+            $evaluation['execution_time'],
+            $evaluation['content_type']
+        );
+
+        return min($baseScore + $timeBonus, 100);
+    }
+
+    /**
+     * Determina livello di rischio
+     */
+    private function determineRiskLevel(array $evaluation): string
+    {
+        if ($evaluation['is_vulnerable']) {
+            return 'HIGH';
+        }
+
+        $score = $evaluation['final_score'];
+
+        if ($score >= 80) {
+            return 'LOW';
+        } elseif ($score >= 60) {
+            return 'MEDIUM';
+        }
+
+        return 'HIGH';
+    }
+
+    /**
+     * Genera riassunto performance
+     */
+    private function generatePerformanceSummary(array $evaluation): string
+    {
+        $score = $evaluation['final_score'];
+        $riskLevel = $evaluation['risk_level'];
+
+        if ($score >= 90) {
+            return "Eccellente consapevolezza della sicurezza. Continua così!";
+        } elseif ($score >= 80) {
+            return "Buona performance con alcune aree di miglioramento.";
+        } elseif ($score >= 60) {
+            return "Performance discreta. Raccomandato training aggiuntivo.";
+        } elseif ($score >= 40) {
+            return "Performance insufficiente. Training urgente necessario.";
+        }
+
+        return "Vulnerabilità critica rilevata. Training immediato obbligatorio.";
+    }
+
+    /**
+     * Log risultato valutazione per analytics
+     */
+    private function logEvaluationResult(array $evaluation): void
+    {
+        Log::info('User simulation evaluation completed', [
+            'content_type' => $evaluation['content_type'],
+            'final_score' => $evaluation['final_score'],
+            'is_vulnerable' => $evaluation['is_vulnerable'],
+            'risk_level' => $evaluation['risk_level'],
+            'execution_time' => $evaluation['execution_time']
+        ]);
+    }
+
+    /**
+     * Genera contenuto personalizzato per la campagna
+     */
+    public function generatePersonalizedContent(Campaign $campaign): array
+    {
+        $results = [];
+
+        foreach ($campaign->attack_types as $attackType) {
+            try {
+                $parameters = [
+                    'difficulty' => $campaign->difficulty_level,
+                    'target_audience' => $campaign->target_audience,
+                    'human_factors' => $campaign->human_factors ?? []
+                ];
+
+                $generation = LLMIntegration::create([
+                    'campaign_id' => $campaign->id,
+                    'content_type' => $attackType,
+                    'generation_parameters' => $parameters,
+                    'status' => LLMIntegration::STATUS_GENERATING
+                ]);
+
+                // Genera contenuto
+                $content = $this->llmService->generateContent($attackType, $parameters, $campaign);
+
+                $generation->update([
+                    'generated_content' => $content['content'],
+                    'model_used' => $content['model'],
+                    'tokens_consumed' => $content['tokens'],
+                    'quality_score' => $content['quality_score'],
+                    'status' => LLMIntegration::STATUS_COMPLETED
+                ]);
+
+                $results[$attackType] = $generation;
+
+            } catch (\Exception $e) {
+                Log::error("Failed to generate content for attack type: {$attackType}", [
+                    'campaign_id' => $campaign->id,
+                    'error' => $e->getMessage()
+                ]);
+
+                $results[$attackType] = [
+                    'success' => false,
+                    'error' => $e->getMessage()
+                ];
+            }
+        }
+
+        return $results;
+    }
+}

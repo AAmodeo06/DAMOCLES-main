@@ -1,0 +1,41 @@
+services:
+  laravel:
+    container_name: laravel
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+        - "80:8000"
+        - "5173:5173"
+    depends_on:
+        mysql:
+          condition: service_started
+    environment:
+      LARAVEL_DATABASE_HOST: mysql
+      LARAVEL_DATABASE_NAME: damocles
+      LARAVEL_DATABASE_USER: damocles
+      LARAVEL_DATABASE_PASSWORD: damocles
+    volumes:
+      - ./:/app
+      - /app/node_modules
+
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    restart: always
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: damocles
+      MYSQL_USER: damocles
+      MYSQL_PASSWORD: damocles
+  g4f:
+    container_name: g4f
+    image: hlohaus789/g4f:latest
+    restart: unless-stopped
+
+volumes:
+  mysqldata:

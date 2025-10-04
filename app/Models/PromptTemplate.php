@@ -7,13 +7,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class HumanFactor extends Model
+Class PromptTemplate extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'name',
-        'level',
         'description',
+        'template',
     ];
 }

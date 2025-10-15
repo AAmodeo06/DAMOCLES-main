@@ -1,6 +1,11 @@
 <?php
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // Realizzato da: Luigi La Gioia
+=======
+
+//REALIZZATO DA: Luigi La Gioia
+>>>>>>> Stashed changes
 
 namespace App\Models;
 
@@ -10,7 +15,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
 {
+<<<<<<< Updated upstream
     use HasFactory;
+=======
+    protected $table = 'notifications';
+>>>>>>> Stashed changes
 
     protected $fillable = [
         'user_id',
@@ -24,6 +33,7 @@ class Notification extends Model
     ];
 
     public function user(): BelongsTo
+<<<<<<< Updated upstream
 =======
 // Implementato da: Luigi La Gioia
 namespace App\Models;
@@ -47,16 +57,22 @@ class Notification extends Model
     // Relazione con utente - Luigi La Gioia
     public function user()
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
     {
         return $this->belongsTo(User::class);
     }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
     public function campaign(): BelongsTo
     {
         return $this->belongsTo(TrainingCampaign::class, 'campaign_id');
     }
 
+<<<<<<< Updated upstream
     public function isRead(): bool
     {
         return !is_null($this->read_at);
@@ -83,6 +99,16 @@ class Notification extends Model
             'related_id' => $trainingSessionId,
             'isVisualized' => false,
         ]);
+>>>>>>> Stashed changes
+=======
+    public function markAsRead(): void
+    {
+        if (is_null($this->read_at)) $this->update(['read_at' => now()]);
+    }
+
+    public function scopeUnread($q): bool
+    {
+        return $q->whereNull('read_at');
 >>>>>>> Stashed changes
     }
 }

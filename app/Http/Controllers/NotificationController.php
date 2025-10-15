@@ -2,7 +2,13 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // Implementato da: Luigi La Gioia
+=======
+
+//REALIZZATO DA: Luigi La Gioia
+
+>>>>>>> Stashed changes
 =======
 
 //REALIZZATO DA: Luigi La Gioia
@@ -24,6 +30,7 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -72,6 +79,8 @@ class NotificationController extends Controller
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class NotificationController extends Controller
@@ -96,6 +105,9 @@ class NotificationController extends Controller
         return back()->with('status','Notifica segnata come letta');
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes

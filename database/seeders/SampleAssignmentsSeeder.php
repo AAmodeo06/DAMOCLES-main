@@ -2,7 +2,12 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // Realizzato da: Luigi La Gioia
+=======
+
+//REALIZZATO DA: Luigi La Gioia
+>>>>>>> Stashed changes
 =======
 
 //REALIZZATO DA: Luigi La Gioia
@@ -22,6 +27,10 @@ use Illuminate\Database\Seeder;
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+use Illuminate\Support\Facades\DB;
+>>>>>>> Stashed changes
 =======
 use Illuminate\Support\Facades\DB;
 >>>>>>> Stashed changes
@@ -39,8 +48,11 @@ use App\Models\Notification;
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 use App\Models\AttackType;
 use App\Models\PromptTemplate;
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -52,6 +64,7 @@ class SampleAssignmentsSeeder extends Seeder
 {
     public function run(): void
     {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -104,6 +117,8 @@ class SampleAssignmentsSeeder extends Seeder
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
         // 1) Utente demo (se non esiste)
         $user = User::first() ?? User::factory()->create([
             'name' => 'Target Demo',
@@ -147,6 +162,9 @@ class SampleAssignmentsSeeder extends Seeder
         ]);
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes

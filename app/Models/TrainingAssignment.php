@@ -3,10 +3,15 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 //REALIZZATO DA: Luigi La Gioia
 =======
 // Realizzato da: Luigi La Gioia
+>>>>>>> Stashed changes
+=======
+
+//REALIZZATO DA: Luigi La Gioia
 >>>>>>> Stashed changes
 =======
 
@@ -42,9 +47,13 @@ class TrainingAssignment extends Model
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         'completed_at',
 =======
         'completed_at'
+>>>>>>> Stashed changes
+=======
+        'completed_at',
 >>>>>>> Stashed changes
 =======
         'completed_at',
@@ -76,9 +85,13 @@ class TrainingAssignment extends Model
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
      public function completedUnits(): BelongsToMany
 =======
     public function completedUnits(): BelongsToMany
+>>>>>>> Stashed changes
+=======
+     public function completedUnits(): BelongsToMany
 >>>>>>> Stashed changes
 =======
      public function completedUnits(): BelongsToMany

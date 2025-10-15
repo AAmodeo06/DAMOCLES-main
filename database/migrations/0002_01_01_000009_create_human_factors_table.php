@@ -13,7 +13,7 @@ return new class extends Migration
         Schema::create('human_factors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('level', ['none','low', 'medium', 'high', 'max']);
+            $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->timestamps();
         });

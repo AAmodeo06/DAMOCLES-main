@@ -1,5 +1,7 @@
 <?php
-// Implementato da: Cosimo Mandrillo
+
+// REALIZZATO DA: Cosimo Mandrillo
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;

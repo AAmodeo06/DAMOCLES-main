@@ -12,7 +12,77 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-8 text-sky-900">
+                {{--***IMPLEMENTAZIONE Andrea Amodeo***--}}
+                <div class="border rounded p-4 mb-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold">Training Personalizzato(LLM)</h2>
+                        <a href="{{ route('llm.personalized.form') }}" class="text-sm text-sky-700 underline">Ricarica</a>
+                    </div>
 
+                    @if(session('success'))
+                        <div class="mt-3 p-3 bg-green-100 text-green-900 rounded">{{ session('success') }}</div>
+                    @endif
+
+                    <form class="mt-4 grid md:grid-cols-2 gap-3" method="post" action="{{ route('llm.personalized.generate') }}">
+                        @csrf
+
+                        <div>
+                            <x-input-label for="user_id" value="Utente target" />
+                            <select id="user_id" name="user_id" class="mt-1 block w-full border rounded p-2" required>
+                                @foreach(($users ?? []) as $u)
+                                    <option value="{{ $u->id }}">{{ $u->id }} — {{ $u->name ?? $u->email }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error class="mt-2" :messages="$errors->get('user_id')" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="campaign_id" value="Campagna PETA" />
+                            <select id="campaign_id" name="campaign_id" class="mt-1 block w-full border rounded p-2" required>
+                                @foreach(($campaigns ?? []) as $c)
+                                    <option value="{{ $c->id }}">{{ $c->title }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error class="mt-2" :messages="$errors->get('campaign_id')" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="vulnerability_id" value="Attacco (vulnerabilità)" />
+                            <select id="vulnerability_id" name="vulnerability_id" class="mt-1 block w-full border rounded p-2" required>
+                                @foreach(($attacks ?? []) as $a)
+                                    <option value="{{ $a->id }}">{{ $a->name }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error class="mt-2" :messages="$errors->get('vulnerability_id')" />
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <x-input-label for="modality" value="Modalità" />
+                                <select id="modality" name="modality" class="mt-1 block w-full border rounded p-2">
+                                    <option value="text">Testo</option>
+                                    <option value="audio">Script audio</option>
+                                </select>
+                            </div>
+                            <div>
+                                <x-input-label for="language" value="Lingua" />
+                                <select id="language" name="language" class="mt-1 block w-full border rounded p-2">
+                                    <option value="it">Italiano</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 flex justify-end">
+                            <x-primary-button>Genera & Salva</x-primary-button>
+                        </div>
+                    </form>
+
+                    <p class="text-xs text-gray-500 mt-2">
+                        Il contenuto viene personalizzato in base ai debiti sui fattori umani dell'utente (pivot <code>user_human_factor</code>).
+                    </p>
+                </div>
+            {{-- ***FINE IMPLEMENTAZIONE Andrea Amodeo*** --}}
                     <div
                         class="flex flex-col md:flex-row w-full space-y-2 md:space-y-0 sm:justify-between items-center mb-6">
                         <p class="font-semibold text-xl">@lang('llm.llms')</p>
@@ -92,11 +162,11 @@
                                                         <button class="hover:bg-gray-100" data-id="{{ $llm->id }}"
                                                             x-data=""
                                                             @click="$dispatch('open-modal', 'update-modal', { id: {{ $llm->id }} } )"
-                                                            onclick="fillUpdateModal({ 
-                                                                id: '{{ $llm->id }}', 
-                                                                endpoint: '{{ $llm->endpoint }}', 
-                                                                provider: '{{ $llm->provider }}', 
-                                                                model: '{{ $llm->model }}' 
+                                                            onclick="fillUpdateModal({
+                                                                id: '{{ $llm->id }}',
+                                                                endpoint: '{{ $llm->endpoint }}',
+                                                                provider: '{{ $llm->provider }}',
+                                                                model: '{{ $llm->model }}'
                                                             })">
                                                             @lang('llm.update')
                                                         </button>

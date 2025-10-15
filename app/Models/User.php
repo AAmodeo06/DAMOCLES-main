@@ -1,5 +1,7 @@
 <?php
-//MODIFICATO DA LUIGI LA GIOIA
+
+// MODIFICATO DA: Andrea Amodeo
+// MODIFICATO DA: Luigi La Gioia
 
 namespace App\Models;
 
@@ -7,8 +9,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Concerns\InteractsWithPivotTable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -73,38 +78,87 @@ class User extends Authenticatable
         return Carbon::parse($this->dob)->age;
     }
 
-    //AGGIUNTO DA LUIGI LA GIOIA
-    public function campaigns()
+    //AGGIUNTO DA Andrea Amodeo
+    public function humanFactors(): BelongsToMany
     {
-        return $this->belongsToMany(Campaign::class, 'campaign_user')
-            ->withPivot('status', 'completion_date', 'score')
+        return $this->belongsToMany(HumanFactor::class, 'user_human_factor')
+            ->withPivot(['debt_level'])
             ->withTimestamps();
     }
 
     //AGGIUNTO DA LUIGI LA GIOIA
-    public function riskProfile()
+    public function trainingAssignments(): HasMany
     {
-        return $this->hasOne(UserRiskProfile::class);
+        return $this->hasMany(\App\Models\TrainingAssignment::class, 'user_id');
     }
 
     //AGGIUNTO DA LUIGI LA GIOIA
-    public function securityIncidents()
+    public function trainingCampaigns()
     {
-        return $this->hasMany(SecurityIncident::class);
+         return $this->belongsToMany(
+            \App\Models\TrainingCampaign::class,
+            'training_assignments',
+            'user_id',
+            'campaign_id'
+        )
+        ->withPivot(['status', 'assigned_at', 'completed_at'])
+        ->withTimestamps();
     }
 
     //AGGIUNTO DA LUIGI LA GIOIA
-    public function calculateRiskLevel()
+    public function unitCompletions(): HasMany
     {
-        if (!$this->riskProfile) {
-            return 'unknown';
+        return $this->hasMany(\App\Models\UnitCompletion::class, 'user_id');
+    }
+
+    //AGGIUNTO DA LUIGI LA GIOIA
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(\App\Models\Notification::class, 'user_id');
+    }
+
+    //AGGIUNTO DA LUIGI LA GIOIA
+    private function countCampaignUnits(int $campaignId): array
+    {
+        $total = \App\Models\TrainingUnit::where('campaign_id', $campaignId)->count();
+
+        $done = $this->unitCompletions()
+            ->whereIn('unit_id', function ($query) use ($campaignId) {
+                $query->from((new \App\Models\TrainingUnit)->getTable())
+                    ->select('id')
+                    ->where('campaign_id', $campaignId);
+            })
+            ->count();
+
+        return ['total' => $total, 'done' => $done];
+    }
+
+    //AGGIUNTO DA LUIGI LA GIOIA
+    public function hasCompletedCampaign(int $campaignId): bool
+    {
+        $counts = $this->countCampaignUnits($campaignId);
+
+        if ($counts['total'] === 0) {
+            return false;
         }
 
-        $score = $this->riskProfile->overall_risk_score;
-
-        if ($score >= 70) return 'high';
-        if ($score >= 40) return 'medium';
-        return 'low';
+        return $counts['done'] >= $counts['total'];
     }
 
+    //AGGIUNTO DA LUIGI LA GIOIA
+    public function campaignProgress(int $campaignId): int
+    {
+        $counts = $this->countCampaignUnits($campaignId);
+
+        if ($counts['total'] === 0) {
+            return 0;
+        }
+
+        return (int) floor(($counts['done'] * 100) / $counts['total']);
+    }
+
+    public function role()
+    {
+    return $this->belongsTo(\App\Models\Role::class, 'role_id');
+    }
 }

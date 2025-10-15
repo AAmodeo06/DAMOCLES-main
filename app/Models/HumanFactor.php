@@ -1,61 +1,41 @@
 <?php
-<<<<<<< Updated upstream
 
-<<<<<<< Updated upstream
-//REALIZZATO DA: Andrea Amodeo
-=======
-//REALIZZATO DA LUIGI LA GIOIA
-=======
-//REALIZZATO DA: Andrea Amodeo
->>>>>>> Stashed changes
->>>>>>> Stashed changes
+// REALIZZATO DA: Andrea Amodeo
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class HumanFactor extends Model
 {
-<<<<<<< Updated upstream
-    use HasFactory;
+    protected $fillable = ['name','slug','description'];
 
-<<<<<<< Updated upstream
-    protected $fillable = [
-        'name',
-        'level',
-        'description',
-    ];
-=======
-    public function vulnerabilities()
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_human_factor')
+            ->withPivot(['debt_level'])
+            ->withTimestamps();
+    }
+
+     public function vulnerabilities()
     {
         return $this->belongsToMany(Vulnerability::class, 'human_factor_vulnerability')
-                    ->withPivot('impact_level', 'notes')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
-    public function scopeHighImpact($query)
+    public function getDebtLevelForUser($userId): ?string
     {
-        return $query->whereHas('users', function ($q) {
-            $q->where('value', '>=', '1.5');
-        });
+        $pivot = $this->users()->where('user_id', $userId)->first()?->pivot;
+        return $pivot?->debt_level;
     }
 
-    public function averageValue()
+    public function usersWithMinDebt(string $minLevel = 'medium')
     {
-        return $this->users()->avg('value') ?? 0;
+        $rank = ['none'=>0,'low'=>1,'medium'=>2,'high'=>3,'max'=>4];
+        $minLevel = strtolower($minLevel);
+        if (!array_key_exists($minLevel, $rank)) $minLevel = 'medium';
+        $allowedLevels = array_keys(array_filter($rank, fn($v) => $v >= $rank[$minLevel]));
+        return $this->users()->wherePivotIn('debt_level', $allowedLevels)->get();
     }
-=======
-    protected $fillable = ['name', 'description'];
-
-   public function vulnerabilities()
-   {
-       return $this->belongsToMany(Vulnerability::class, 'human_factor_vulnerability');
-   }
-
-   public function users()
-   {
-       return $this->belongsToMany(User::class, 'user_hf_vuln')->withPivot('vuln_id', 'score')->withTimestamps();
-   }
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 }

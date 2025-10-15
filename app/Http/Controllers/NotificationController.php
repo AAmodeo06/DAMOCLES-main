@@ -1,6 +1,12 @@
 <?php
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // Implementato da: Luigi La Gioia
+=======
+
+//REALIZZATO DA: Luigi La Gioia
+
+>>>>>>> Stashed changes
 =======
 
 //REALIZZATO DA: Luigi La Gioia
@@ -12,6 +18,7 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 class NotificationController extends Controller
 {
@@ -54,6 +61,8 @@ class NotificationController extends Controller
         return redirect()->back()
             ->with('success', 'Tutte le notifiche sono state lette');
 =======
+=======
+>>>>>>> Stashed changes
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class NotificationController extends Controller
@@ -76,6 +85,9 @@ class NotificationController extends Controller
         $notification->markAsRead();
 
         return back()->with('status','Notifica segnata come letta');
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 }

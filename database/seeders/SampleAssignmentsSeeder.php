@@ -1,6 +1,11 @@
 <?php
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // Realizzato da: Luigi La Gioia
+=======
+
+//REALIZZATO DA: Luigi La Gioia
+>>>>>>> Stashed changes
 =======
 
 //REALIZZATO DA: Luigi La Gioia
@@ -10,6 +15,10 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+use Illuminate\Support\Facades\DB;
+>>>>>>> Stashed changes
 =======
 use Illuminate\Support\Facades\DB;
 >>>>>>> Stashed changes
@@ -19,8 +28,11 @@ use App\Models\TrainingUnit;
 use App\Models\TrainingAssignment;
 use App\Models\Notification;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 use App\Models\AttackType;
 use App\Models\PromptTemplate;
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 
@@ -28,6 +40,7 @@ class SampleAssignmentsSeeder extends Seeder
 {
     public function run(): void
     {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
         $users = User::whereHas('role', function($q) {
             $q->where('name', '!=', 'Evaluator');
@@ -74,6 +87,8 @@ class SampleAssignmentsSeeder extends Seeder
             ]);
         }
 =======
+=======
+>>>>>>> Stashed changes
         // 1) Utente demo (se non esiste)
         $user = User::first() ?? User::factory()->create([
             'name' => 'Target Demo',
@@ -115,6 +130,9 @@ class SampleAssignmentsSeeder extends Seeder
             'message'     => 'Nuova campagna assegnata!',
             'read_at'     => null,
         ]);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 }

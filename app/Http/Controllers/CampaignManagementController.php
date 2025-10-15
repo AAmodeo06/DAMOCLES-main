@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 
 class CampaignManagementController extends Controller
 {
+<<<<<<< Updated upstream
+=======
+    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+>>>>>>> Stashed changes
     // Lista campagne del valutatore - Cosimo Mandrillo
     public function index(Request $request)
     {

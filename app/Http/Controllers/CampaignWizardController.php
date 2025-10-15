@@ -7,6 +7,10 @@ use App\Models\Vulnerability;
 use App\Models\PromptTemplate;
 use App\Models\User;
 use App\Models\LLM;
+<<<<<<< Updated upstream
+=======
+use App\Models\TrainingSession;
+>>>>>>> Stashed changes
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

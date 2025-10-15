@@ -1,5 +1,5 @@
 <?php
-// database/seeders/CampaignSeeder.php
+
 // REALIZZATO DA: Andrea Amodeo
 
 namespace Database\Seeders;

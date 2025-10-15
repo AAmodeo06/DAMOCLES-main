@@ -6,10 +6,13 @@
 
 use App\Http\Controllers\HAISController;
 use App\Http\Controllers\DAMOCLESController;
+use App\Http\Controllers\LLMController;
+use App\Http\Controllers\WizardController;
 use App\Http\Controllers\CampaignManagementController;
 use App\Http\Controllers\CampaignWizardController;
 use App\Http\Controllers\UserTrainingController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\HumanFactorController;
 use App\Http\Controllers\PromptTemplateController;
 use App\Http\Controllers\HumanFactorController;
 use App\Http\Controllers\UserController;
@@ -38,6 +41,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/users/{role?}', [UserController::class, 'index'])
             ->middleware(['auth', 'verified'])
             ->name('users');
+
+        //TRAINING-Modificato da Luigi La Gioia
+        Route::get('/user/training', [UserTrainingController::class, 'index'])->name('user.training.index');
+        Route::get('/user/training/units/{unit}', [UserTrainingController::class, 'showUnit'])->name('user.training.unit.show');
+        Route::post('/user/training/units/{unit}/complete', [UserTrainingController::class, 'completeUnit'])->name('user.training.unit.complete');
+
+        //NOTIFICATION-Modificato da Luigi La Gioia
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
     });
 
     Route::middleware(['role:Evaluator'])->group(function () {
@@ -64,6 +76,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Questionnaires
         Route::delete('/result/{answer}', [QuestionnaireCampaignController::class, 'deleteAnswer'])->name('result.destroy');
+
+        //Human Factor-Modificato da Andrea Amodeo
+        Route::get('/evaluator/human-factors', [HumanFactorController::class, 'index'])->name('human-factors.index');
+        Route::post('/evaluator/human-factors', [HumanFactorController::class, 'store'])->name('human-factors.store');
+        Route::patch('/evaluator/human-factors/{humanFactor}', [HumanFactorController::class, 'update'])->name('human-factors.update');
+        Route::delete('/evaluator/human-factors/{humanFactor}', [HumanFactorController::class, 'destroy'])->name('human-factors.destroy');
+
+        Route::get('/evaluator/users/{user}/human-factors', [HumanFactorController::class, 'assignForm'])->name('human-factors.assign');
+        Route::post('/evaluator/users/{user}/human-factors', [HumanFactorController::class, 'assignStore'])->name('human-factors.assign.store');
+
+        //LLMController-Modificato da Andrea Amodeo
+        Route::get('/evaluator/llm/personalized', [LLMController::class, 'personalizedForm'])->name('llm.personalized.form');
+        Route::post('/evaluator/llm/personalized', [LLMController::class, 'personalizedGenerate'])->name('llm.personalized.generate');
 
         //Human Factor-Modificato da Andrea Amodeo
         Route::get('/evaluator/human-factor', [HumanFactorController::class, 'index'])->name('human-factor.index');

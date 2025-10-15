@@ -1,4 +1,8 @@
 <?php
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 // Realizzato da: Cosimo Mandrillo
 
 namespace App\Models;

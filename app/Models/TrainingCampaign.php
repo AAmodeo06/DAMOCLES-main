@@ -3,6 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+<<<<<<< Updated upstream
+=======
+use App\Models\TrainingSession;
+>>>>>>> Stashed changes
 
 class TrainingCampaign extends Model
 {

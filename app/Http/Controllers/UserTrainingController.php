@@ -1,6 +1,7 @@
 <?php
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // Implementato da: Luigi La Gioia
 namespace App\Http\Controllers;
 
@@ -13,6 +14,8 @@ class UserTrainingController extends Controller
 {
     // Lista training disponibili per l'utente - Luigi La Gioia
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 
@@ -30,6 +33,9 @@ class UserTrainingController extends Controller
 {
     // /user/training → lista assegnazioni + Progress: X% + "Continua Training"
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -37,6 +43,7 @@ class UserTrainingController extends Controller
     {
         $user = Auth::user();
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
         $trainingSessions = TrainingSession::where('user_id', $user->id)
@@ -95,6 +102,8 @@ class UserTrainingController extends Controller
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
         $assignments = TrainingAssignment::with('campaign')
             ->where('user_id',$user->id)
             ->orderByDesc('id')
@@ -142,6 +151,9 @@ class UserTrainingController extends Controller
 
         return redirect()->route('user.training.index')->with('status','Unit completata!');
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes

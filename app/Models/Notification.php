@@ -2,7 +2,12 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 // Realizzato da: Luigi La Gioia
+=======
+
+//REALIZZATO DA: Luigi La Gioia
+>>>>>>> Stashed changes
 =======
 
 //REALIZZATO DA: Luigi La Gioia
@@ -22,7 +27,11 @@ class Notification extends Model
 {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     use HasFactory;
+=======
+    protected $table = 'notifications';
+>>>>>>> Stashed changes
 =======
     protected $table = 'notifications';
 >>>>>>> Stashed changes
@@ -42,6 +51,7 @@ class Notification extends Model
     ];
 
     public function user(): BelongsTo
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 =======
@@ -71,6 +81,8 @@ class Notification extends Model
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
     {
         return $this->belongsTo(User::class);
     }
@@ -78,6 +90,9 @@ class Notification extends Model
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -87,6 +102,7 @@ class Notification extends Model
         return $this->belongsTo(TrainingCampaign::class, 'campaign_id');
     }
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
     public function isRead(): bool
@@ -119,6 +135,8 @@ class Notification extends Model
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
     public function markAsRead(): void
     {
         if (is_null($this->read_at)) $this->update(['read_at' => now()]);
@@ -128,6 +146,9 @@ class Notification extends Model
     {
         return $q->whereNull('read_at');
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes

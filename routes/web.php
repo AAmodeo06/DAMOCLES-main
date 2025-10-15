@@ -1,19 +1,20 @@
 <?php
 
 //MODIFICATO DA: Andrea Amodeo
+//MODIFICATO DA: Luigi La Gioia
+//MODIFICATO DA: Cosimo Mandrillo
 
 use App\Http\Controllers\HAISController;
 use App\Http\Controllers\DAMOCLESController;
-<<<<<<< Updated upstream
 use App\Http\Controllers\LLMController;
 use App\Http\Controllers\WizardController;
-=======
 use App\Http\Controllers\CampaignManagementController;
 use App\Http\Controllers\CampaignWizardController;
 use App\Http\Controllers\UserTrainingController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\HumanFactorController;
->>>>>>> Stashed changes
+use App\Http\Controllers\PromptTemplateController;
+use App\Http\Controllers\HumanFactorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\QuestionnaireCampaignController;
@@ -21,11 +22,7 @@ use App\Http\Controllers\PhishingCampaignController;
 use App\Http\Controllers\PhishingContextController;
 use App\Http\Controllers\PhishingPersuasionController;
 use App\Http\Controllers\PhishingEmotionalTriggerController;
-<<<<<<< Updated upstream
-=======
 use App\Http\Controllers\LLMController;
-
->>>>>>> Stashed changes
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -80,8 +77,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Questionnaires
         Route::delete('/result/{answer}', [QuestionnaireCampaignController::class, 'deleteAnswer'])->name('result.destroy');
 
-<<<<<<< Updated upstream
-=======
         //Human Factor-Modificato da Andrea Amodeo
         Route::get('/evaluator/human-factors', [HumanFactorController::class, 'index'])->name('human-factors.index');
         Route::post('/evaluator/human-factors', [HumanFactorController::class, 'store'])->name('human-factors.store');
@@ -95,11 +90,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/evaluator/llm/personalized', [LLMController::class, 'personalizedForm'])->name('llm.personalized.form');
         Route::post('/evaluator/llm/personalized', [LLMController::class, 'personalizedGenerate'])->name('llm.personalized.generate');
 
->>>>>>> Stashed changes
+        //Human Factor-Modificato da Andrea Amodeo
+        Route::get('/evaluator/human-factor', [HumanFactorController::class, 'index'])->name('human-factor.index');
+        Route::post('/evaluator/human-factors', [HumanFactorController::class, 'store'])->name('human-factor.store');
+        Route::put('/evaluator/human-factors/{humanFactor}', [HumanFactorController::class, 'update'])->name('human-factors.update');
+        Route::delete('/evaluator/human-factors/{humanFactor}', [HumanFactorController::class, 'destroy'])->name('human-factors.destroy');
+
+        //Prompt Templates-Modificato da Andrea Amodeo
+        Route::get('/evaluator/prompt-templates', [PromptTemplateController::class, 'index'])->name('prompt-templates.index');
+        Route::post('/evaluator/prompt-templates/simulate', [PromptTemplateController::class, 'simulate'])->name('prompt-templates.simulate');
+
         // HAIS
         Route::get('/hais', [HAISController::class, 'preview'])->name('hais.preview');
         Route::get('/hais/result/{hais}', [HAISController::class, 'result'])->name('hais.result');
         //Route::delete('/hais/result/{hais}', [HAISController::class, 'destroy'])->name('hais.destroy');
+
+        //CAMPAIGN WIZARD-Modificato da Cosimo Mandrillo
+        Route::get('/evaluator/campaigns/create', [CampaignWizardController::class, 'create'])->name('campaigns.create');
+        Route::post('/evaluator/campaigns', [CampaignWizardController::class, 'store'])->name('campaigns.store');
+        Route::get('/evaluator/campaigns/{campaign}/preview', [CampaignManagementController::class, 'preview'])->name('campaigns.preview');
+
+        //CAMPAIGN MANAGEMENT-Modificato da Cosimo Mandrillo
+        Route::get('/evaluator/campaigns', [CampaignManagementController::class, 'index'])->name('campaigns.index');
+        Route::get('/evaluator/campaigns/{campaign}', [CampaignManagementController::class, 'show'])->name('campaigns.show');
+        Route::post('/evaluator/campaigns/{campaign}/state', [CampaignManagementController::class, 'changeState'])->name('campaigns.changeState');
 
         // DAMOCLES
         Route::get('/damocles', [DAMOCLESController::class, 'preview'])->name('damocles.preview');
@@ -128,38 +142,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/phishing-campaign/download-data/{phishingCampaign}', [PhishingCampaignController::class, 'downloadDataCSV'])->name('phishing-campaign.download-data-csv');
         Route::get('/phishing-campaign/download-all-data', [PhishingCampaignController::class, 'downloadAllDataCSV'])->name('phishing-campaign.download-all-data-csv');
 
-        // Wizard for creating a new phishing campaign
-        //REALIZZATO DA: Andrea Amodeo
-        Route::prefix('wizard')->group(function () {
-            Route::get('/create-campaign', [WizardController::class, 'step1'])->name('wizard.step1');
-            Route::post('/step1', [WizardController::class, 'processStep1'])->name('wizard.process.step1');
-            Route::get('/step2/{session}', [WizardController::class, 'step2'])->name('wizard.step2');
-            Route::post('/step2/{session}', [WizardController::class, 'processStep2'])->name('wizard.process.step2');
-            Route::get('/step3/{session}', [WizardController::class, 'step3'])->name('wizard.step3');
-            Route::post('/step3/{session}', [WizardController::class, 'processStep3'])->name('wizard.process.step3');
-            Route::get('/step4/{session}', [WizardController::class, 'step4'])->name('wizard.step4');
-            Route::post('/step4/{session}', [WizardController::class, 'processStep4'])->name('wizard.process.step4');
-            Route::get('/step5/{session}', [WizardController::class, 'step5'])->name('wizard.step5');
-            Route::post('/step5/{session}', [WizardController::class, 'processStep5'])->name('wizard.process.step5');
-            Route::get('/step6/{session}', [WizardController::class, 'step6'])->name('wizard.step6');
-            Route::post('/complete/{session}', [WizardController::class, 'complete'])->name('wizard.complete');
-        });
-
-        // LLM WEB ROUTES - Integration for simulation interface
-        //REALIZZATO DA: Andrea Amodeo
-        Route::prefix('llm')->group(function () {
-            Route::get('/simulation/{campaign}', [LLMController::class, 'showSimulation'])->name('llm.simulation');
-        });
-
-        // LLM API ROUTES - Endpoint JSON for asynchronous communication with the LLM server
-        //REALIZZATO DA: Andrea Amodeo
-        Route::prefix('api/llm')->group(function () {
-            Route::post('/generate-content', [LLMController::class, 'generateContent'])->name('api.llm.generate');
-            Route::get('/simulation/{campaign}', [LLMController::class, 'getSimulation'])->name('api.llm.simulation');
-            Route::post('/simulation/{llmGeneration}/execute', [LLMController::class, 'executeSimulation'])->name('api.llm.execute');
-            Route::get('/status/{generation}', [LLMController::class, 'getStatus'])->name('api.llm.status');
-        });
-
         // Phishing email attributes
         Route::get('/phishing-campaign/option', [PhishingCampaignController::class, 'option'])->name('phishing-campaign.option');
         Route::post('/phishing-campaign/context', [PhishingContextController::class, 'create'])->name('context.create');
@@ -187,6 +169,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // DAMOCLES
         Route::post('/damocles', [DAMOCLESController::class, 'create'])->name('damocles.create');
         Route::get('/damocles/answer/{user}/{questionnaireCampaign}/{questionnaire}', [DAMOCLESController::class, 'answer'])->name('damocles.answer');
+
+        //TRAINING-Modificato da Luigi La Gioia
+        Route::get('/user/training', [UserTrainingController::class, 'index'])->name('user.training.index');
+        Route::get('/user/training/{session}', [UserTrainingController::class, 'show'])->name('user.training.show');
+        Route::post('/user/training/{session}/complete', [UserTrainingController::class, 'complete'])->name('user.training.complete');
+
+        //NOTIFICATION-Modificato da Luigi La Gioia
+        Route::get('/user/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+        Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
     });
 
     Route::middleware(['role:Evaluator,User'])->group(function () {
